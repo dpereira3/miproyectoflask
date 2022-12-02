@@ -1,0 +1,10 @@
+{% extends './base.html' %}
+{% block titulo %}
+<!-- Datos vienen del diccionario, accede con punto a la clave -->
+    <title>{{datos.titulo}}</title>
+{% endblock %}
+{% block contenido %}
+    {{super()}} <!-- Contenido de la plantilla base, viene gracias a super -->
+    <h1>Encabezado Acerca de</h1>
+    <h2>{{datos.encabezado}}</h2>
+{% endblock %} 

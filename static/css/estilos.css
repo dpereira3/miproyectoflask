@@ -1,0 +1,25 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-size: 1.1em;
+    background-color: #a0cdf9;
+}
+
+header{
+    background-color: #5198fc;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px 10px 0px 0px;
+}
+
+header img{
+    width: 100px;
+}
+
+#contenido {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: aquamarine;
+}

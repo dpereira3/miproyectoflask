@@ -1,14 +1,28 @@
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "Este es el INDEX o pagina principal"
+    datos = {'titulo':'Pagina principal','encabezado':'Bienvenido a mi pagina web'}
+    #Datos a mostrar como diccionario
+    #encabezado = "Encabezado desde Flask"
+    return render_template('index.html',datos = datos)
+    #return "Este es el INDEX o pagina principal"
 
 @app.route('/acercade')
 def acercade():
-    return "<h1>Acerca de mi</h1>"
+    dic = {'titulo':'Acerca de','encabezado':'Acerca de mí'}
+    #return "<h1>Acerca de mi</h1>"
+    return render_template('acercade.html', datos = dic)
+
+@app.route('/condicionybucle')
+def condicionybucle():
+    datos = {
+        'edad': 50,
+        'nombres' : ['Jose','Mar','Lucia','Eva']
+    }
+    return render_template('condicionybucle.html', datos = datos)
 
 #Con parametros
 @app.route('/saludame/<string:nombre>')
