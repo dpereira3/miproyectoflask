@@ -13,12 +13,7 @@
     <header>
         <h2>Menu en Plantilla base</h2>
         <img src="{{url_for('static',filename='img/logo.png')}}" alt="logo">
-        <nav>
-            <ul>
-                <li><a href="#">Inicio</a></li>
-                <li><a href="#">Acerca de</a></li>
-            </ul>
-        </nav>
+        {% include 'includes/barranavegacion.html' %}
     </header>
     <section id="contenido">
         {% block contenido %}

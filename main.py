@@ -1,9 +1,21 @@
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask, redirect, url_for, render_template, request, flash
 
 app = Flask(__name__)
 
+@app.before_request
+def before_request():
+    #print("Antes de la peticion")
+    pass
+
+@app.after_request
+def after_request(response):
+    #print("Despues de la peticion")
+    return response
+
 @app.route('/')
 def index():
+    flash('Has iniciado en la pagina principal')
+    print("accediendo al index")
     datos = {'titulo':'Pagina principal','encabezado':'Bienvenido a mi pagina web'}
     #Datos a mostrar como diccionario
     #encabezado = "Encabezado desde Flask"
@@ -50,6 +62,12 @@ def redirecciona(sitio=None):
     else:
         return redirect(url_for('acercade'))
 
+#Pagina no encontrada
+def pagina_no_encontrada(error):
+    return render_template('errores/404.html'), 404
+
 if __name__ == '__main__':
+    app.register_error_handler(404, pagina_no_encontrada)
+    app.secret_key = 'clave-flask'
     app.run(debug=True)
 
