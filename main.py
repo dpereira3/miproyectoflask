@@ -1,27 +1,82 @@
-from flask import Flask, redirect, url_for, render_template, request, flash
+from flask import Flask, redirect, url_for, render_template, request, flash, session
+from werkzeug.security import check_password_hash as checkph
+from werkzeug.security import generate_password_hash as genph
+
 import basedatos
 
 app = Flask(__name__)
 
 @app.before_request
 def before_request():
-    #print("Antes de la peticion")
-    pass
+    ruta = request.path
+    if not 'usuario' in session and ruta != '/entrar' and ruta != '/login' and ruta != '/salir' and ruta != '/registro':
+        flash("Inicia sesion para continuar")
+        return redirect('/entrar')
+
 
 @app.after_request
 def after_request(response):
     #print("Despues de la peticion")
     return response
 
-@app.route('/')
-def index():
-    flash('Has iniciado en la pagina principal')
+#@app.route('/')
+#def index():
+    #flash('Has iniciado en la pagina principal')
     #print("accediendo al index")
-    datos = {'titulo':'Pagina principal','encabezado':'Bienvenido a mi pagina web'}
+    #datos = {'titulo':'Pagina principal','encabezado':'Bienvenido a mi pagina web'}
     #Datos a mostrar como diccionario
     #encabezado = "Encabezado desde Flask"
-    return render_template('index.html',datos = datos)
+    #return render_template('index.html',datos = datos)
     #return "Este es el INDEX o pagina principal"
+
+@app.route('/dentro')
+def dentro():
+    return render_template('index.html')
+
+@app.route('/')
+@app.route('/entrar')
+def entrar():
+    return render_template('entrar.html')
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.form['email']
+    contraseña = request.form['contraseña']
+    try:
+        usuario = basedatos.obtener_usuario(email)
+    except Exception as e:
+        flash("Error al obtener usuario")
+    if usuario:
+        if(checkph(usuario[1], contraseña)):
+            session['usuario'] = email
+            return redirect("/dentro")
+        else:
+            flash("Acceso denegado")
+            return redirect("/entrar")
+    return redirect('/entrar')
+
+@app.route('/salir')
+def salir():
+    session.pop("usuario", None)
+    flash("Sesion cerrada")
+    return redirect("/entrar")
+
+@app.route('/registro')
+def registro():
+    return render_template("registro.html")
+
+@app.route('/registrar', methods=['POST'])
+def guardar_usuario():
+    email = request.form['email']
+    contraseña = request.form['contraseña']
+    contraseña = genph(contraseña)
+    try:
+        basedatos.alta_usuario(email, contraseña)
+        flash("Usuario registrado")
+    except Exception as e:
+        flash("Error al registrar usuario")
+    finally:
+        return redirect("/entrar")
 
 @app.route('/acercade')
 def acercade():
@@ -78,6 +133,24 @@ def guardar_articulo():
 def articulos():
     articulos = basedatos.listar_articulos()
     return render_template('articulos.html', articulos=articulos)
+
+@app.route('/eliminar_articulo', methods=['POST'])
+def eliminar_articulo():
+    basedatos.eliminar_articulo(request.form['id'])
+    return redirect('/articulos')
+
+@app.route('/editar_articulo/<int:id>')
+def editar_articulo(id):
+    articulo = basedatos.obtener_articulo(id)
+    return render_template('editar_articulo.html', articulo=articulo)
+
+@app.route('/actualizar_articulo', methods=['POST'])
+def actualizar_articulo():
+    id = request.form['id']
+    nombre = request.form['nombre']
+    precio = request.form['precio']
+    basedatos.actualizar_articulo(id, nombre, precio)
+    return redirect('/articulos')
 
 #Pagina no encontrada
 def pagina_no_encontrada(error):
