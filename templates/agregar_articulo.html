@@ -1,0 +1,26 @@
+{% extends './base.html' %} 
+{% block titulo %} 
+Agregar Articulo
+{% endblock %} 
+{% block contenido %} 
+<section>
+    <h3>Agregar Articulo</h3>
+    <form action="{{url_for('guardar_articulo')}}" method="post">
+        <div class="mb-3">
+            <label for="codigo" class="form-label">Codigo</label>
+            <input type="text" class="form-control" placeholder="codigo" name="codigo" id="codigo">
+        </div>
+        <div class="mb-3">
+            <label for="codigo" class="form-label">Nombre</label>
+            <input type="text" class="form-control" placeholder="Nombre" name="nombre" id="nombre" required>
+        </div>
+        <div class="mb-3">
+            <label for="codigo" class="form-label">Precio</label>
+            <input type="text" class="form-control" placeholder="Precio" name="precio" id="precio" readonly>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn-outline-primary">Guardar</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %} 
+{% block titulo %} 
+Articulos
+{% endblock %} 
+{% block contenido %} 
+<section>
+    <h3>Articulos</h3>
+    <a href="{% url_for('agregar_articulo') %}" class="btn btn-outline-primary">Agregar Articulo</a>
+    <table class="table">
+
+    </table>
+</section>
+{% endblock %} 

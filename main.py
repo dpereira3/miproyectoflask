@@ -1,4 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, request, flash
+import basedatos
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ def after_request(response):
 @app.route('/')
 def index():
     flash('Has iniciado en la pagina principal')
-    print("accediendo al index")
+    #print("accediendo al index")
     datos = {'titulo':'Pagina principal','encabezado':'Bienvenido a mi pagina web'}
     #Datos a mostrar como diccionario
     #encabezado = "Encabezado desde Flask"
@@ -61,6 +62,22 @@ def redirecciona(sitio=None):
         return redirect(url_for('index'))
     else:
         return redirect(url_for('acercade'))
+
+@app.route('/agregar_articulo')
+def agregar_articulo():
+    return render_template("agregar_articulo.html")
+
+@app.route('/guardar_articulo', methods=['POST'])
+def guardar_articulo():
+    nombre = request.form['nombre']
+    precio = request.form['precio']
+    basedatos.insertar_articulo(nombre, precio)
+    return redirect('/articulos')
+
+@app.route('/articulos')
+def articulos():
+    articulos = basedatos.listar_articulos()
+    return render_template('articulos.html', articulos=articulos)
 
 #Pagina no encontrada
 def pagina_no_encontrada(error):
