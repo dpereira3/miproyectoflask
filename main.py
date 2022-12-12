@@ -1,30 +1,18 @@
 from flask import Flask, redirect, url_for, render_template, request, flash, session
 from werkzeug.security import check_password_hash as checkph
 from werkzeug.security import generate_password_hash as genph
-import logging
 
 import basedatos
 
-from logging.config import dictConfig
-
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'INFO',
-        'handlers': ['wsgi']
-    }
-})
-
 app = Flask(__name__)
+#app.config["SESSION_PERMANENT"] = False
+#app.config["SESSION_TYPE"] = 'redis'
+#app.config["SESSION_COOKIE_SECURE"] = True
+#app.config["SESSION_COOKIE_NAME"] = 'Prueba'
 app.secret_key = 'miclavesecreta'
+#app.config.from_object(__name__)
+#Session(app)
+
 
 @app.before_request
 def before_request():
@@ -95,7 +83,6 @@ def registrar():
         flash("Usuario registrado")
     except Exception as e:
         flash("Error al registrar usuario")
-        logging.exception("An exception was thrown!")
     finally:
         return redirect('/entrar')
 
