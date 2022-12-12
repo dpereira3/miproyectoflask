@@ -59,7 +59,7 @@ def alta_usuario(email, clave):
     conexion = dame_conexion_remota()
     with conexion.cursor() as cursor:
         cursor.execute(
-            "INSERT INTO usuarios (id, email, clave) VALUES (NULL, %s, %s)", (email, clave)
+            "INSERT INTO usuarios(id, email, clave) VALUES (NULL, %s, %s)", (email, clave)
         )
     conexion.commit()
     conexion.close()
@@ -78,3 +78,4 @@ def obtener_usuario(email):
 #if __name__ == '__main__':
     #articulos = listar_articulos()
     #print(articulos)
+    #alta_usuario('lala', '1234')

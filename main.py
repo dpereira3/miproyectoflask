@@ -1,10 +1,30 @@
 from flask import Flask, redirect, url_for, render_template, request, flash, session
 from werkzeug.security import check_password_hash as checkph
 from werkzeug.security import generate_password_hash as genph
+import logging
 
 import basedatos
 
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
+
 app = Flask(__name__)
+app.secret_key = 'miclavesecreta'
 
 @app.before_request
 def before_request():
@@ -41,18 +61,18 @@ def entrar():
 @app.route('/login', methods=['POST'])
 def login():
     email = request.form['email']
-    contraseña = request.form['contraseña']
+    clave = request.form['clave']
     try:
         usuario = basedatos.obtener_usuario(email)
     except Exception as e:
         flash("Error al obtener usuario")
     if usuario:
-        if(checkph(usuario[1], contraseña)):
+        if(checkph(usuario[1], clave)):
             session['usuario'] = email
             return redirect("/dentro")
         else:
             flash("Acceso denegado")
-            return redirect("/entrar")
+            return redirect('/entrar')
     return redirect('/entrar')
 
 @app.route('/salir')
@@ -66,17 +86,18 @@ def registro():
     return render_template("registro.html")
 
 @app.route('/registrar', methods=['POST'])
-def guardar_usuario():
+def registrar():
     email = request.form['email']
-    contraseña = request.form['contraseña']
-    contraseña = genph(contraseña)
+    clave = request.form['clave']
+    clave = genph(clave)
     try:
-        basedatos.alta_usuario(email, contraseña)
+        basedatos.alta_usuario(email, clave)
         flash("Usuario registrado")
     except Exception as e:
         flash("Error al registrar usuario")
+        logging.exception("An exception was thrown!")
     finally:
-        return redirect("/entrar")
+        return redirect('/entrar')
 
 @app.route('/acercade')
 def acercade():
