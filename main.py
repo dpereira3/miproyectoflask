@@ -2,17 +2,10 @@ from flask import Flask, redirect, url_for, render_template, request, flash, ses
 from werkzeug.security import check_password_hash as checkph
 from werkzeug.security import generate_password_hash as genph
 
+
 import basedatos
 
 app = Flask(__name__)
-#app.config["SESSION_PERMANENT"] = False
-#app.config["SESSION_TYPE"] = 'redis'
-#app.config["SESSION_COOKIE_SECURE"] = True
-#app.config["SESSION_COOKIE_NAME"] = 'Prueba'
-app.secret_key = 'miclavesecreta'
-#app.config.from_object(__name__)
-#Session(app)
-
 
 @app.before_request
 def before_request():
@@ -53,7 +46,7 @@ def login():
     try:
         usuario = basedatos.obtener_usuario(email)
     except Exception as e:
-        flash("Error al obtener usuario")
+        flash(f"Error al obtener usuario: {e}")
     if usuario:
         if(checkph(usuario[1], clave)):
             session['usuario'] = email
@@ -77,12 +70,14 @@ def registro():
 def registrar():
     email = request.form['email']
     clave = request.form['clave']
-    clave = genph(clave)
+    clavehash = genph(clave)
     try:
-        basedatos.alta_usuario(email, clave)
+        basedatos.alta_usuario(email, clavehash)
         flash("Usuario registrado")
+        print(f"Usuario: {email}, registrado")
     except Exception as e:
-        flash("Error al registrar usuario")
+        flash(f"Error al registrar usuario: {e}")
+        print(f"Error: {e}")
     finally:
         return redirect('/entrar')
 
@@ -134,8 +129,12 @@ def agregar_articulo():
 def guardar_articulo():
     nombre = request.form['nombre']
     precio = request.form['precio']
-    basedatos.insertar_articulo(nombre, precio)
-    return redirect('/articulos')
+    try:
+        basedatos.insertar_articulo(nombre, precio)
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        return redirect('/articulos')
 
 @app.route('/articulos')
 def articulos():
